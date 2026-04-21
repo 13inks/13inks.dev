@@ -1,65 +1,118 @@
-import Image from "next/image";
+const PRODUCTS = [
+  {
+    name: "Archetype",
+    tagline: "Know thyself",
+    description: "Discover your AI working style. Get a personalized config in 2 minutes.",
+    href: "/archetype",
+    status: "live",
+  },
+  {
+    name: "Freshness",
+    tagline: "Keep it real",
+    description: "Is your CLAUDE.md lying? Paste it, get a drift score and fixes.",
+    href: "/freshness",
+    status: "soon",
+  },
+  {
+    name: "Market",
+    tagline: "Steal genius",
+    description: "Curated skill packs from expert workflows. Install in one click.",
+    href: "#",
+    status: "soon",
+  },
+  {
+    name: "Sentinel",
+    tagline: "Catch errors",
+    description: "Your AI keeps making the same mistakes. Sentinel catches the pattern.",
+    href: "#",
+    status: "soon",
+  },
+  {
+    name: "Chelate",
+    tagline: "Ship anywhere",
+    description: "Cross-compile your Rust project to every platform. One command.",
+    href: "#",
+    status: "soon",
+  },
+  {
+    name: "Captain",
+    tagline: "Navigate complex",
+    description: "Enterprise document intelligence. Extraction, validation, reporting.",
+    href: "#",
+    status: "soon",
+  },
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
+    <div className="max-w-5xl mx-auto px-6">
+      {/* Hero */}
+      <section className="py-24 text-center">
+        <h1 className="text-5xl font-bold tracking-tight mb-6">
+          Your AI crew is waiting.
+        </h1>
+        <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
+          Thirteen specialists trained on how{" "}
+          <span className="text-zinc-100 font-medium">you</span> work. Not
+          another generic assistant &mdash; a crew that knows your patterns,
+          catches your mistakes, and ships your style.
+        </p>
+        <a
+          href="/archetype"
+          className="inline-block bg-amber-400 text-zinc-950 font-semibold px-8 py-3 rounded-lg hover:bg-amber-300 transition"
+        >
+          Meet Your Crew &rarr;
+        </a>
+      </section>
+
+      {/* Products */}
+      <section id="products" className="pb-24">
+        <h2 className="text-2xl font-bold mb-8 text-center">The Crew</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {PRODUCTS.map((product) => (
             <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              key={product.name}
+              href={product.href}
+              className={`block border border-zinc-800 rounded-lg p-6 hover:border-zinc-600 transition ${
+                product.status === "soon"
+                  ? "opacity-60 pointer-events-none"
+                  : ""
+              }`}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-lg">{product.name}</h3>
+                {product.status === "soon" && (
+                  <span className="text-xs text-zinc-500 border border-zinc-700 px-2 py-0.5 rounded">
+                    soon
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-amber-400 mb-2">{product.tagline}</p>
+              <p className="text-sm text-zinc-400">{product.description}</p>
+            </a>
+          ))}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      {/* How it works */}
+      <section className="pb-24 text-center">
+        <h2 className="text-2xl font-bold mb-8">How It Works</h2>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
+          {[
+            { step: "1", text: "Take the quiz (2 min)" },
+            { step: "2", text: "Get your archetype + crew" },
+            { step: "3", text: "Download your seed config" },
+            { step: "4", text: "Paste into Claude Code" },
+          ].map((item) => (
+            <div key={item.step} className="flex flex-col items-center gap-2">
+              <span className="text-2xl font-bold text-amber-400">
+                {item.step}
+              </span>
+              <span className="text-zinc-300">{item.text}</span>
+            </div>
+          ))}
         </div>
-      </main>
+      </section>
     </div>
   );
 }
