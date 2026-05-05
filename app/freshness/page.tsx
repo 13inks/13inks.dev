@@ -8,6 +8,7 @@
 import { useEffect, useState } from "react";
 
 const FP_KEY = "freshness_fp";
+const PENDING_KEY = "freshness_pending_text";
 
 interface Claim {
   type: string;
@@ -65,7 +66,64 @@ export default function FreshnessPage() {
 
   useEffect(() => {
     setFp(getFingerprint());
+    redeemFromUrl();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function redeemFromUrl() {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("session_id");
+    if (!sessionId) return;
+
+    // Strip the session_id from the URL bar so a refresh doesn't retry.
+    window.history.replaceState({}, "", "/freshness");
+
+    const pendingText = window.localStorage.getItem(PENDING_KEY) || "";
+
+    setLoading(true);
+    try {
+      const r = await fetch("/api/checkout/redeem", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: sessionId }),
+      });
+      if (!r.ok) {
+        setGenericError("Payment didn't validate. Try again.");
+        return;
+      }
+      const { token } = (await r.json()) as { token: string };
+
+      if (!pendingText) {
+        setGenericError(
+          "Payment cleared. Paste the file again — we don't hold onto it.",
+        );
+        return;
+      }
+
+      const c = await fetch("/api/check-freshness", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: pendingText,
+          paid: true,
+          paid_token: token,
+        }),
+      });
+      if (!c.ok) {
+        setGenericError("Analyzer didn't respond. Try again.");
+        return;
+      }
+      const data = (await c.json()) as Report;
+      setText(pendingText);
+      setReport(data);
+      window.localStorage.removeItem(PENDING_KEY);
+    } catch {
+      setGenericError("Something went wrong validating your payment.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function check() {
     if (!text.trim() || loading) return;
@@ -98,6 +156,28 @@ export default function FreshnessPage() {
       setGenericError("Analyzer didn't respond. Try again.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function startCheckout(mode: "single" | "bundle" | "sub") {
+    if (typeof window === "undefined") return;
+    if (mode !== "sub" && text.trim()) {
+      window.localStorage.setItem(PENDING_KEY, text);
+    }
+    try {
+      const r = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode, fingerprint: fp }),
+      });
+      if (!r.ok) {
+        setGenericError("Checkout didn't open. Try again.");
+        return;
+      }
+      const { url } = (await r.json()) as { url: string };
+      window.location.href = url;
+    } catch {
+      setGenericError("Checkout didn't open. Try again.");
     }
   }
 
@@ -155,9 +235,21 @@ export default function FreshnessPage() {
         </div>
       )}
 
-      {quotaError && <PaywallCard err={quotaError} onReset={reset} />}
+      {quotaError && (
+        <PaywallCard
+          err={quotaError}
+          onReset={reset}
+          onCheckout={startCheckout}
+        />
+      )}
 
-      {report && <ReportCard report={report} onReset={reset} />}
+      {report && (
+        <ReportCard
+          report={report}
+          onReset={reset}
+          onCheckout={startCheckout}
+        />
+      )}
 
       <footer className="mt-24 pt-8 border-t border-zinc-900 text-xs text-zinc-600">
         <p>13inks. We don&apos;t keep your file.</p>
@@ -169,14 +261,16 @@ export default function FreshnessPage() {
 function ReportCard({
   report,
   onReset,
+  onCheckout,
 }: {
   report: Report;
   onReset: () => void;
+  onCheckout: (mode: "single" | "bundle" | "sub") => void;
 }) {
   const tone =
-    report.overallScore >= 85
+    report.overallScore >= 70
       ? "fresh"
-      : report.overallScore >= 60
+      : report.overallScore >= 40
         ? "drifting"
         : "stale";
 
@@ -186,6 +280,13 @@ function ReportCard({
       : tone === "drifting"
         ? "text-amber-400 border-amber-400/30"
         : "text-rose-400 border-rose-400/30";
+
+  const context =
+    tone === "fresh"
+      ? "Your doc tracks your code."
+      : tone === "drifting"
+        ? "Some claims have moved on."
+        : "This file is describing a different codebase.";
 
   const flagged = report.claims.filter((c) => c.staleScore >= 40);
 
@@ -203,6 +304,7 @@ function ReportCard({
               Drift score
             </p>
             <p className="text-lg font-medium capitalize">{tone}</p>
+            <p className="text-sm opacity-80 mt-0.5">{context}</p>
           </div>
         </div>
         <button
@@ -235,8 +337,7 @@ function ReportCard({
         </section>
       ) : (
         <section className="text-sm text-zinc-400">
-          No drift detected. Either your doc is current or this check just hit
-          a clean file.
+          Clean. Either your doc is current or you just got lucky.
         </section>
       )}
 
@@ -263,13 +364,10 @@ function ReportCard({
       {report.tier === "free" && flagged.length > 0 && (
         <section className="border border-zinc-800 rounded-lg p-5">
           <p className="text-sm text-zinc-300 mb-3">
-            We can suggest the rewrites for this file. One dollar.
+            We found the drift. Want the fix? One dollar.
           </p>
           <button
-            onClick={() => {
-              // Stripe Checkout wired in next phase.
-              alert("Stripe Checkout coming next phase.");
-            }}
+            onClick={() => onCheckout("single")}
             className="bg-zinc-100 text-zinc-950 font-medium px-4 py-2 rounded-lg hover:bg-white transition text-sm"
           >
             Refresh this file — $1
@@ -291,9 +389,11 @@ function ReportCard({
 function PaywallCard({
   err,
   onReset,
+  onCheckout,
 }: {
   err: QuotaError;
   onReset: () => void;
+  onCheckout: (mode: "single" | "bundle" | "sub") => void;
 }) {
   return (
     <div className="border border-zinc-800 rounded-lg p-6 space-y-4">
@@ -304,17 +404,13 @@ function PaywallCard({
       </p>
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <button
-          onClick={() => {
-            alert("Stripe Checkout coming next phase.");
-          }}
+          onClick={() => onCheckout("single")}
           className="bg-amber-400 text-zinc-950 font-semibold px-5 py-2.5 rounded-lg hover:bg-amber-300 transition"
         >
           {err.options.single_check.label}
         </button>
         <button
-          onClick={() => {
-            alert("Stripe Checkout coming next phase.");
-          }}
+          onClick={() => onCheckout("sub")}
           className="text-sm text-zinc-300 hover:text-zinc-100 underline"
         >
           {err.options.subscribe.label}

@@ -9,19 +9,14 @@
 import { NextResponse } from "next/server";
 import { analyze, extractPatterns } from "@/lib/freshness/analyzer";
 import { storePatterns, initStore } from "@/lib/freshness/store";
-import {
-  consumeOne,
-  hashFingerprint,
-  QUOTA_CONFIG,
-} from "@/lib/freshness/quota";
+import { consumeOne, hashFingerprint } from "@/lib/freshness/quota";
+import { consumeToken } from "@/lib/stripe/paid_tokens";
 
 interface CheckBody {
   text?: string;
   fingerprint?: string;
-  // Set true when the client has just completed Stripe checkout for a
-  // one-time refresh of THIS document. The server validates the receipt
-  // before honoring it (stub for v1; full Stripe webhook wiring in next phase).
   paid?: boolean;
+  paid_token?: string;
 }
 
 export async function POST(request: Request) {
@@ -35,7 +30,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { text, fingerprint, paid } = body;
+  const { text, fingerprint, paid, paid_token } = body;
 
   if (!text || typeof text !== "string") {
     return NextResponse.json(
@@ -51,9 +46,9 @@ export async function POST(request: Request) {
     );
   }
 
-  // Quota gate (skipped for paid one-time refresh — those are pre-validated.
-  // Until the Stripe webhook is wired, paid=true is dev-only and rejected
-  // unless an explicit dev flag is set).
+  // Quota gate (skipped for paid one-time refresh — verified via paid_token
+  // consumption). Dev fallback (FRESHNESS_DEV_ALLOW_PAID=1) lets us bypass
+  // Stripe end-to-end during local testing.
   let quotaState = null;
   if (!paid) {
     if (!fingerprint || typeof fingerprint !== "string") {
@@ -68,7 +63,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           error: "quota_exhausted",
-          message: `You've used your ${QUOTA_CONFIG.freeLimit} free analyses for this ${QUOTA_CONFIG.windowDays}-day window.`,
+          message: "You've used your free checks for this week.",
           quota: result.state,
           options: {
             single_check: {
@@ -85,14 +80,21 @@ export async function POST(request: Request) {
       );
     }
     quotaState = result.state;
+  } else if (paid_token) {
+    const consume = await consumeToken(paid_token);
+    if (!consume.ok) {
+      return NextResponse.json(
+        { error: "paid_token_rejected", reason: consume.reason },
+        { status: 402 },
+      );
+    }
   } else if (process.env.FRESHNESS_DEV_ALLOW_PAID !== "1") {
     return NextResponse.json(
       {
-        error: "paid_path_not_wired",
-        message:
-          "Stripe checkout flow ships in the next phase. Set FRESHNESS_DEV_ALLOW_PAID=1 for local testing.",
+        error: "paid_token_required",
+        message: "paid:true requires a paid_token from /api/checkout/redeem.",
       },
-      { status: 501 },
+      { status: 402 },
     );
   }
 
