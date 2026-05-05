@@ -22,7 +22,14 @@
 
 # misc
 .DS_Store
+._*
 *.pem
+
+# operational / runtime data (PII risk)
+/.data/
+
+# internal product specs (do not publish)
+/docs/freshness/
 
 # debug
 npm-debug.log*
