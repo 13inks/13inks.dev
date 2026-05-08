@@ -14,6 +14,13 @@ const PRODUCTS = [
     status: "soon",
   },
   {
+    name: "Generate",
+    tagline: "Start clean",
+    description: "No CLAUDE.md yet? Paste your repo. Get a working file in 30 seconds.",
+    href: "/generate",
+    status: "soon",
+  },
+  {
     name: "Market",
     tagline: "Steal genius",
     description: "Curated skill packs from expert workflows. Install in one click.",
