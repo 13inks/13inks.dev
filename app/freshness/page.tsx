@@ -195,7 +195,7 @@ export default function FreshnessPage() {
           Your CLAUDE.md was written for code that&apos;s moved on.
         </h1>
         <p className="text-lg text-zinc-400">
-          Paste it. Get a freshness score. Two free checks a week.
+          Paste it. We see drift, not docs. Two free a week.
         </p>
       </header>
 
@@ -216,9 +216,17 @@ export default function FreshnessPage() {
             >
               {loading ? "Reading…" : "Check"}
             </button>
-            <p className="text-xs text-zinc-500">
-              {text.length > 0 ? `${text.length.toLocaleString()} chars` : ""}
-            </p>
+            <div className="flex items-center gap-4 text-xs text-zinc-500">
+              {text.length > 0 && (
+                <span>{text.length.toLocaleString()} chars</span>
+              )}
+              <a
+                href="/privacy"
+                className="underline hover:text-zinc-300"
+              >
+                See what we keep
+              </a>
+            </div>
           </div>
         </div>
       )}
@@ -252,7 +260,12 @@ export default function FreshnessPage() {
       )}
 
       <footer className="mt-24 pt-8 border-t border-zinc-900 text-xs text-zinc-600">
-        <p>13inks. We don&apos;t keep your file.</p>
+        <p>
+          13inks.{" "}
+          <a href="/privacy" className="underline hover:text-zinc-400">
+            We don&apos;t keep your file.
+          </a>
+        </p>
       </footer>
     </div>
   );
