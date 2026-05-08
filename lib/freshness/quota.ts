@@ -11,6 +11,20 @@ import crypto from "crypto";
 const QUOTA_PATH =
   process.env.FRESHNESS_QUOTA_PATH || ".data/freshness_quota.jsonl";
 
+// Refuse to start in production with the dev fallback salt. A predictable
+// salt + a leaked quota ledger would let an attacker test whether specific
+// fingerprints visited. Eager check at module load — fails fast at boot,
+// never serves a request with the bad salt.
+if (
+  (process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production") &&
+  !process.env.FRESHNESS_FP_SALT
+) {
+  throw new Error(
+    "FRESHNESS_FP_SALT must be set in production. Refusing to start with the dev-only fallback salt.",
+  );
+}
+
 const FP_SALT =
   process.env.FRESHNESS_FP_SALT ||
   "dev-only-salt-set-FRESHNESS_FP_SALT-in-prod";
