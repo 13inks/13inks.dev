@@ -9,14 +9,14 @@ const PRODUCTS = [
   {
     name: "Freshness",
     tagline: "Keep it real",
-    description: "Is your CLAUDE.md lying? Paste it, get a drift score and fixes.",
+    description: "Is your CLAUDE.md or AGENTS.md lying? Paste it, get a drift score.",
     href: "/freshness",
     status: "soon",
   },
   {
     name: "Generate",
     tagline: "Start clean",
-    description: "No CLAUDE.md yet? Paste your repo. Get a working file in 30 seconds.",
+    description: "No steering file yet? Get a CLAUDE.md or AGENTS.md in 30 seconds.",
     href: "/generate",
     status: "soon",
   },
