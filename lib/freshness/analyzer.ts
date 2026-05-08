@@ -297,11 +297,22 @@ export function analyze(markdownText: string): DriftReport {
 // Pattern Storage — anonymized telemetry for scoring improvement
 // ───────────────────────────────────────────────────────────────
 
+// Privacy bound: cap context/value at FIELD_MAX_CHARS so the persisted
+// pattern store cannot accidentally retain long verbatim strings (paths,
+// command bodies). Counts/dates/versions fit comfortably; longer values
+// truncate with an ellipsis marker. See app/privacy/page.tsx.
+const FIELD_MAX_CHARS = 24;
+
+function clip(s: string): string {
+  if (s.length <= FIELD_MAX_CHARS) return s;
+  return s.slice(0, FIELD_MAX_CHARS - 1) + "…";
+}
+
 export function extractPatterns(report: DriftReport): PatternRecord[] {
   return report.claims.map((claim) => ({
     type: claim.type,
-    context: extractContext(claim.text),
-    value: claim.value,
+    context: clip(extractContext(claim.text)),
+    value: clip(claim.value),
     staleScore: claim.staleScore,
     ts: new Date().toISOString(),
   }));
