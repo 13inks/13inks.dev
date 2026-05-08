@@ -74,12 +74,79 @@ function majorOf(version: string): string {
   return m ? m[1] : "";
 }
 
+type PackageManager = "pnpm" | "yarn" | "bun" | "npm";
+
+const PLACEHOLDER_NAMES = new Set([
+  "root",
+  "monorepo",
+  "project",
+  "app",
+  "src",
+  "main",
+  "package",
+  "name",
+  "test",
+  "example",
+  "default",
+]);
+
 function safeParseJson<T>(text?: string): T | null {
   if (!text) return null;
   try {
     return JSON.parse(text) as T;
   } catch {
     return null;
+  }
+}
+
+function stripHtml(s: string): string {
+  return s
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Pre-filter for README paragraph extraction: lines that match block-level
+// HTML, badges, or headings get skipped before they enter the buffer. This
+// prevents the "first paragraph" from starting inside a tag and producing
+// a chopped result. Inline residue is cleaned by stripHtml afterward.
+function isSkippableLine(line: string): boolean {
+  if (line.startsWith("#")) return true;
+  if (line.startsWith("![") || line.startsWith("[![")) return true;
+  if (/^<[^>]+>$/.test(line)) return true;
+  if (/^<(div|p|br|hr|img|a|sup|sub|h[1-6])\b/i.test(line)) return true;
+  if (/^<\/(div|p|br|hr|a|sup|sub|h[1-6])>/i.test(line)) return true;
+  return false;
+}
+
+function isPlaceholderName(name: string | undefined): boolean {
+  if (!name) return true;
+  return PLACEHOLDER_NAMES.has(name.toLowerCase().trim());
+}
+
+function detectPackageManager(dirListing: string[]): PackageManager {
+  const flat = dirListing.map((d) => d.replace(/\/$/, ""));
+  if (flat.includes("pnpm-lock.yaml")) return "pnpm";
+  if (flat.includes("bun.lockb") || flat.includes("bun.lock")) return "bun";
+  if (flat.includes("yarn.lock")) return "yarn";
+  return "npm";
+}
+
+function buildCommand(pm: PackageManager, script: string): string {
+  switch (pm) {
+    case "pnpm":
+      return `pnpm ${script}`;
+    case "yarn":
+      return `yarn ${script}`;
+    case "bun":
+      return `bun ${script}`;
+    case "npm":
+    default:
+      return `npm run ${script}`;
   }
 }
 
@@ -173,14 +240,16 @@ function extractFirstParagraph(readme?: string): string | undefined {
       if (buf.length > 0) break;
       continue;
     }
-    if (line.startsWith("#")) continue;
-    if (line.startsWith("![")) continue; // badge or image
-    if (line.startsWith("[![")) continue; // badge link
+    if (isSkippableLine(line)) continue;
     buf.push(line);
     if (buf.join(" ").length >= 200) break;
   }
   if (buf.length === 0) return undefined;
-  let para = buf.join(" ");
+  // Strip HTML — many READMEs use <h2>, <div>, <img>, etc. Without this,
+  // raw tags leak into the generated description (Med caught this on
+  // psf/black + sindresorhus/awesome during the corpus probe).
+  let para = stripHtml(buf.join(" "));
+  if (para.length === 0) return undefined;
   if (para.length > 160) para = para.slice(0, 157).trimEnd() + "...";
   return para;
 }
@@ -205,6 +274,7 @@ function classifyDirs(
 
 function extractCommands(
   pkg: PackageJsonShape,
+  pm: PackageManager,
 ): { label: string; cmd: string; note?: string }[] {
   const scripts = pkg.scripts ?? {};
   const out: { label: string; cmd: string; note?: string }[] = [];
@@ -213,7 +283,7 @@ function extractCommands(
   for (const key of order) {
     const cmd = scripts[key];
     if (!cmd) continue;
-    out.push({ label: COMMAND_LABELS[key] ?? key, cmd: `npm run ${key}` });
+    out.push({ label: COMMAND_LABELS[key] ?? key, cmd: buildCommand(pm, key) });
   }
   return out;
 }
@@ -221,13 +291,16 @@ function extractCommands(
 export function extractFacts(inputs: GenerateInputs): RepoFacts {
   const pkg = safeParseJson<PackageJsonShape>(inputs.packageJson) ?? {};
   const dirs = inputs.dirListing ?? [];
+  const pm = detectPackageManager(dirs);
 
   const facts: RepoFacts = {
-    name: pkg.name,
+    // Drop generic placeholder names ("root", "monorepo", etc.) — they
+    // surface in monorepo root package.json files and add no signal.
+    name: isPlaceholderName(pkg.name) ? undefined : pkg.name,
     description: extractFirstParagraph(inputs.readme),
     framework: detectFramework(pkg),
     deployment: detectDeployment(dirs),
-    commands: extractCommands(pkg),
+    commands: extractCommands(pkg, pm),
     layout: classifyDirs(dirs),
     conventions: detectConventions(pkg, dirs),
   };
