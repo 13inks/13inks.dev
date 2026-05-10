@@ -66,6 +66,11 @@ export default function FreshnessPage() {
 
   useEffect(() => {
     setFp(getFingerprint());
+    const prefill = window.localStorage.getItem("landing_prefill");
+    if (prefill) {
+      setText(prefill);
+      window.localStorage.removeItem("landing_prefill");
+    }
     redeemFromUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

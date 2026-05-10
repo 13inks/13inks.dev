@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "13inks \u2014 Your AI Crew",
+  title: "13inks \u2014 AI personality, shaped by you",
   description:
-    "Thirteen specialists trained on how YOU work. Take the quiz, get your archetype, download your personalized AI config.",
+    "Check drift. Discover your archetype. Generate a fresh CLAUDE.md.",
   openGraph: {
-    title: "13inks \u2014 Your AI Crew",
-    description: "Thirteen specialists. One crew. Yours.",
+    title: "13inks \u2014 AI personality, shaped by you",
+    description: "Check drift. Discover your archetype. Generate a fresh CLAUDE.md.",
     type: "website",
   },
 };
@@ -43,17 +43,18 @@ export default function RootLayout({
               <a href="/archetype" className="hover:text-zinc-100 transition">
                 Archetype
               </a>
-              <a href="#products" className="hover:text-zinc-100 transition">
-                Products
+              <a href="/freshness" className="hover:text-zinc-100 transition">
+                Freshness
+              </a>
+              <a href="/generate" className="hover:text-zinc-100 transition">
+                Generate
               </a>
             </div>
           </div>
         </nav>
         <main className="flex-1">{children}</main>
         <footer className="border-t border-zinc-800 px-6 py-6 text-center text-sm text-zinc-500">
-          Powered by{" "}
-          <span className="text-zinc-300 font-medium">MUCA Labs</span> \u2014
-          Mycelial Unified Cognitive Architecture
+          <span className="text-zinc-300 font-medium">13inks</span> by MUCA Labs
         </footer>
       </body>
     </html>

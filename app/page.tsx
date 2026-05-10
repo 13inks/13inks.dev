@@ -1,124 +1,83 @@
-const PRODUCTS = [
-  {
-    name: "Archetype",
-    tagline: "Know thyself",
-    description: "Discover your AI working style. Get a personalized config in 2 minutes.",
-    href: "/archetype",
-    status: "live",
-  },
-  {
-    name: "Freshness",
-    tagline: "Keep it real",
-    description: "Is your CLAUDE.md or AGENTS.md lying? Paste it, get a drift score.",
-    href: "/freshness",
-    status: "soon",
-  },
-  {
-    name: "Generate",
-    tagline: "Start clean",
-    description: "No steering file yet? Get a CLAUDE.md or AGENTS.md in 30 seconds.",
-    href: "/generate",
-    status: "soon",
-  },
-  {
-    name: "Market",
-    tagline: "Steal genius",
-    description: "Curated skill packs from expert workflows. Install in one click.",
-    href: "#",
-    status: "soon",
-  },
-  {
-    name: "Sentinel",
-    tagline: "Catch errors",
-    description: "Your AI keeps making the same mistakes. Sentinel catches the pattern.",
-    href: "#",
-    status: "soon",
-  },
-  {
-    name: "Chelate",
-    tagline: "Ship anywhere",
-    description: "Cross-compile your Rust project to every platform. One command.",
-    href: "#",
-    status: "soon",
-  },
-  {
-    name: "Captain",
-    tagline: "Navigate complex",
-    description: "Enterprise document intelligence. Extraction, validation, reporting.",
-    href: "#",
-    status: "soon",
-  },
-];
+import FreshnessTeaser from "@/app/components/FreshnessTeaser";
 
 export default function Home() {
   return (
-    <div className="max-w-5xl mx-auto px-6">
-      {/* Hero */}
-      <section className="py-24 text-center">
-        <h1 className="text-5xl font-bold tracking-tight mb-6">
-          Your AI crew is waiting.
+    <div className="max-w-3xl mx-auto px-6">
+      {/* Hero — immediate utility */}
+      <section className="py-20">
+        <h1 className="text-4xl font-bold tracking-tight mb-3">
+          Your CLAUDE.md was written for code that&apos;s moved on.
         </h1>
-        <p className="text-xl text-zinc-400 max-w-2xl mx-auto mb-10">
-          Thirteen specialists trained on how{" "}
-          <span className="text-zinc-100 font-medium">you</span> work. Not
-          another generic assistant &mdash; a crew that knows your patterns,
-          catches your mistakes, and ships your style.
+        <p className="text-lg text-zinc-400 mb-8">
+          Paste it. We see drift, not docs. Two free a week.
         </p>
-        <a
-          href="/archetype"
-          className="inline-block bg-amber-400 text-zinc-950 font-semibold px-8 py-3 rounded-lg hover:bg-amber-300 transition"
-        >
-          Meet Your Crew &rarr;
-        </a>
+        <FreshnessTeaser />
+        <p className="mt-4 text-sm text-zinc-500">
+          No CLAUDE.md yet?{" "}
+          <a
+            href="/archetype"
+            className="text-amber-400 underline hover:text-amber-300"
+          >
+            Take the quiz
+          </a>{" "}
+          or{" "}
+          <a
+            href="/generate"
+            className="text-amber-400 underline hover:text-amber-300"
+          >
+            generate one
+          </a>
+          .
+        </p>
       </section>
 
-      {/* Products */}
-      <section id="products" className="pb-24">
-        <h2 className="text-2xl font-bold mb-8 text-center">The Crew</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {PRODUCTS.map((product) => (
-            <a
-              key={product.name}
-              href={product.href}
-              className={`block border border-zinc-800 rounded-lg p-6 hover:border-zinc-600 transition ${
-                product.status === "soon"
-                  ? "opacity-60 pointer-events-none"
-                  : ""
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-semibold text-lg">{product.name}</h3>
-                {product.status === "soon" && (
-                  <span className="text-xs text-zinc-500 border border-zinc-700 px-2 py-0.5 rounded">
-                    soon
-                  </span>
-                )}
-              </div>
-              <p className="text-sm text-amber-400 mb-2">{product.tagline}</p>
-              <p className="text-sm text-zinc-400">{product.description}</p>
-            </a>
-          ))}
+      {/* The funnel */}
+      <section className="pb-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <a
+            href="/archetype"
+            className="block border border-zinc-800 rounded-lg p-6 hover:border-amber-400/50 transition"
+          >
+            <h3 className="font-semibold text-lg mb-1">Archetype</h3>
+            <p className="text-sm text-amber-400 mb-2">Know thyself</p>
+            <p className="text-sm text-zinc-400">
+              Don&apos;t have a CLAUDE.md yet? 5 questions, 2 minutes.
+              Discover how you work and get a config shaped around it.
+            </p>
+          </a>
+
+          <a
+            href="/generate"
+            className="block border border-zinc-800 rounded-lg p-6 hover:border-amber-400/50 transition"
+          >
+            <h3 className="font-semibold text-lg mb-1">Generate</h3>
+            <p className="text-sm text-amber-400 mb-2">Start clean</p>
+            <p className="text-sm text-zinc-400">
+              Paste your package.json. Get a CLAUDE.md in 30 seconds.
+              No quiz required.
+            </p>
+          </a>
+
+          <a
+            href="/freshness"
+            className="block border border-zinc-800 rounded-lg p-6 hover:border-amber-400/50 transition"
+          >
+            <h3 className="font-semibold text-lg mb-1">Freshness</h3>
+            <p className="text-sm text-amber-400 mb-2">Keep it real</p>
+            <p className="text-sm text-zinc-400">
+              Already have one? Check it for drift.
+              We flag claims your code has outgrown.
+            </p>
+          </a>
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="pb-24 text-center">
-        <h2 className="text-2xl font-bold mb-8">How It Works</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm">
-          {[
-            { step: "1", text: "Take the quiz (2 min)" },
-            { step: "2", text: "Get your archetype + crew" },
-            { step: "3", text: "Download your seed config" },
-            { step: "4", text: "Paste into Claude Code" },
-          ].map((item) => (
-            <div key={item.step} className="flex flex-col items-center gap-2">
-              <span className="text-2xl font-bold text-amber-400">
-                {item.step}
-              </span>
-              <span className="text-zinc-300">{item.text}</span>
-            </div>
-          ))}
-        </div>
+      {/* Brand */}
+      <section className="pb-20 text-center">
+        <p className="text-sm text-zinc-500">
+          Give your AI a personality shaped by how you actually think.
+          And own it.
+        </p>
       </section>
     </div>
   );
