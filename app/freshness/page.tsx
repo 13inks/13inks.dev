@@ -66,6 +66,11 @@ export default function FreshnessPage() {
 
   useEffect(() => {
     setFp(getFingerprint());
+    const prefill = window.localStorage.getItem("landing_prefill");
+    if (prefill) {
+      setText(prefill);
+      window.localStorage.removeItem("landing_prefill");
+    }
     redeemFromUrl();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -194,8 +199,17 @@ export default function FreshnessPage() {
         <h1 className="text-4xl font-bold tracking-tight mb-3">
           Your CLAUDE.md was written for code that&apos;s moved on.
         </h1>
-        <p className="text-lg text-zinc-400">
+        <p className="text-lg text-zinc-400 mb-4">
           Paste it. We see drift, not docs. Two free a week.
+        </p>
+        <p className="text-sm text-zinc-500">
+          No CLAUDE.md yet?{" "}
+          <a
+            href="/generate"
+            className="text-amber-400 underline hover:text-amber-300"
+          >
+            Generate one →
+          </a>
         </p>
       </header>
 

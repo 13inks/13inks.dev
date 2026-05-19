@@ -34,12 +34,10 @@ function ResultsContent() {
       const JSZip = (await import("jszip")).default;
       const zip = new JSZip();
 
-      zip.file("CLAUDE.md", seed.claudeMd);
+      zip.file("13inks-seed-packet/PLANT.md", seed.plantMd);
+      zip.file("13inks-seed-packet/CLAUDE.md", seed.claudeMd);
       for (const skill of seed.skills) {
-        zip.file(skill.path, skill.content);
-      }
-      for (const memory of seed.memories) {
-        zip.file(memory.path, memory.content);
+        zip.file(`13inks-seed-packet/${skill.path}`, skill.content);
       }
 
       const blob = await zip.generateAsync({ type: "blob" });
@@ -71,9 +69,9 @@ function ResultsContent() {
         <p className="text-zinc-400 max-w-lg mx-auto">{info.description}</p>
       </div>
 
-      {/* Ink Cell */}
+      {/* Your Inks */}
       <div className="border border-zinc-800 rounded-lg p-6 mb-8">
-        <h2 className="font-semibold mb-4">Your Ink Cell</h2>
+        <h2 className="font-semibold mb-4">Your Inks</h2>
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <span className="text-xs font-mono text-zinc-500 w-20">POINT</span>
@@ -124,16 +122,24 @@ function ResultsContent() {
         </button>
       </div>
 
-      {/* Install instructions */}
+      {/* Plant instructions */}
       <div className="border border-zinc-800 rounded-lg p-6 mb-8">
-        <h2 className="font-semibold mb-3">Install</h2>
+        <h2 className="font-semibold mb-3">Plant it</h2>
+        <p className="text-sm text-zinc-400 mb-4">
+          The zip contains a <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">PLANT.md</code> with the exact prompt to paste.
+          Your Claude session does the rest — it reads the packet, looks at your real project, and proposes where everything goes.
+          You review and approve before anything lands.
+        </p>
         <ol className="text-sm text-zinc-400 list-decimal list-inside flex flex-col gap-2">
-          <li>Unzip into your project root</li>
-          <li>Append <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">CLAUDE.md</code> content to your existing CLAUDE.md (or create one)</li>
-          <li>Copy <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">skills/</code> to <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">~/.claude/skills/</code></li>
-          <li>Copy <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">memory/</code> to your project&apos;s <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">.claude/memory/</code></li>
-          <li>Start a new Claude Code session &mdash; it adapts immediately</li>
+          <li>Unzip and move the <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">13inks-seed-packet/</code> folder into your project root</li>
+          <li>Open Claude Code in your project root</li>
+          <li>Open <code className="text-zinc-200 bg-zinc-800 px-1.5 py-0.5 rounded">PLANT.md</code> and paste the prompt inside it into Claude</li>
+          <li>Review the plan Claude proposes, approve, and let it place the files</li>
         </ol>
+        <p className="text-xs text-zinc-500 mt-4">
+          New to Claude Code? Get it at{" "}
+          <a href="https://claude.com/code" className="text-amber-400 hover:text-amber-300 transition">claude.com/code</a> first.
+        </p>
       </div>
 
       {/* Share + retake */}
@@ -147,13 +153,11 @@ function ResultsContent() {
         <span className="text-zinc-700">|</span>
         <button
           onClick={() => {
-            navigator.clipboard.writeText(
-              `I'm a ${dominant} (${info.title}) on 13inks.dev \u2014 what's your AI archetype?`
-            );
+            navigator.clipboard.writeText(window.location.href);
           }}
           className="text-sm text-amber-400 hover:text-amber-300 transition"
         >
-          Copy Share Text
+          Copy Share Link
         </button>
       </div>
     </div>
