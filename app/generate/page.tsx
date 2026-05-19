@@ -1,8 +1,7 @@
 // CLAUDE.md generator — Tier 1 web surface.
-// Anonymous diagnosis (2 free per fingerprint per 7-day window),
-// paid one-time refresh ($1) returns the same artifact (no tier
-// difference for now — generation cost is uniform).
-// Shares the freshness fingerprint and paywall plumbing.
+// Input: README.md + directory listing (package.json removed — CLAUDE.md is language-agnostic).
+// Anonymous quota: 2 free per fingerprint per 7-day window.
+// Paid one-time ($1) or subscriber bypasses quota.
 
 "use client";
 
@@ -12,7 +11,6 @@ const FP_KEY = "freshness_fp";
 const PENDING_KEY = "generate_pending_inputs";
 
 interface GenerateInputs {
-  packageJson?: string;
   readme?: string;
   dirListing?: string[];
 }
@@ -33,17 +31,6 @@ interface QuotaError {
     subscribe: { price_cents: number; label: string };
   };
 }
-
-const PKG_PLACEHOLDER = `{
-  "name": "your-project",
-  "scripts": {
-    "dev": "next dev",
-    "test": "vitest"
-  },
-  "dependencies": {
-    "next": "16.2.4"
-  }
-}`;
 
 const README_PLACEHOLDER = `# your-project
 
@@ -79,7 +66,6 @@ function parseDirListing(text: string): string[] {
 }
 
 export default function GeneratePage() {
-  const [pkg, setPkg] = useState("");
   const [readme, setReadme] = useState("");
   const [dirs, setDirs] = useState("");
   const [result, setResult] = useState<GenerateResult | null>(null);
@@ -145,7 +131,6 @@ export default function GeneratePage() {
         return;
       }
       const data = (await c.json()) as GenerateResult;
-      setPkg(pending.packageJson ?? "");
       setReadme(pending.readme ?? "");
       setDirs((pending.dirListing ?? []).join("\n"));
       setResult(data);
@@ -159,14 +144,13 @@ export default function GeneratePage() {
 
   function buildInputs(): GenerateInputs {
     return {
-      packageJson: pkg.trim() || undefined,
       readme: readme.trim() || undefined,
       dirListing: dirs.trim() ? parseDirListing(dirs) : undefined,
     };
   }
 
   function hasAnyInput(): boolean {
-    return Boolean(pkg.trim() || readme.trim() || dirs.trim());
+    return Boolean(readme.trim() || dirs.trim());
   }
 
   async function generate() {
@@ -223,7 +207,6 @@ export default function GeneratePage() {
     setResult(null);
     setQuotaError(null);
     setGenericError(null);
-    setPkg("");
     setReadme("");
     setDirs("");
   }
@@ -256,28 +239,15 @@ export default function GeneratePage() {
     <div className="max-w-3xl mx-auto px-6 py-16">
       <header className="mb-10">
         <h1 className="text-4xl font-bold tracking-tight mb-3">
-          Tell Claude what your project actually is. In 30 seconds.
+          Tell Claude what your project actually is.
         </h1>
         <p className="text-lg text-zinc-400">
-          We read your repo. You get a CLAUDE.md. We see drift, not docs.
+          Paste your README and directory structure. Get a CLAUDE.md in 30 seconds.
         </p>
       </header>
 
       {!result && !quotaError && (
         <div className="space-y-6 mb-10">
-          <Field
-            label="package.json"
-            hint="Paste the contents. We use name, framework, scripts, and detected libraries."
-          >
-            <textarea
-              value={pkg}
-              onChange={(e) => setPkg(e.target.value)}
-              placeholder={PKG_PLACEHOLDER}
-              rows={8}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
-            />
-          </Field>
-
           <Field
             label="README.md"
             hint="The first paragraph becomes the project description."
