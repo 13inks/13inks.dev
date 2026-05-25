@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QUESTIONS, Option } from "@/lib/questions";
+import { QUESTIONS, USE_CONTEXT_OPTIONS, getQuestionText, Option, UseContext } from "@/lib/questions";
 import { computeResult, ArchetypeScores } from "@/lib/scoring";
 import { ARCHETYPES } from "@/lib/archetypes";
 
 export default function ArchetypePage() {
   const router = useRouter();
+  const [context, setContext] = useState<UseContext | null>(null);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Option[]>([]);
   const [runningScores, setRunningScores] = useState<ArchetypeScores>({
@@ -18,14 +19,17 @@ export default function ArchetypePage() {
     Creator: 0,
   });
 
-  const question = QUESTIONS[currentQ];
-  const progress = ((currentQ) / QUESTIONS.length) * 100;
+  const totalSteps = QUESTIONS.length + 1; // +1 for context question
+  const progress = context === null ? 0 : ((currentQ + 1) / totalSteps) * 100;
+
+  function handleContextSelect(c: UseContext) {
+    setContext(c);
+  }
 
   function handleSelect(option: Option) {
     const newAnswers = [...answers, option];
     setAnswers(newAnswers);
 
-    // Update running scores for radar visualization
     const newScores = { ...runningScores };
     for (const [arch, weight] of Object.entries(option.weights)) {
       newScores[arch as keyof ArchetypeScores] += weight as number;
@@ -35,7 +39,6 @@ export default function ArchetypePage() {
     if (currentQ < QUESTIONS.length - 1) {
       setCurrentQ(currentQ + 1);
     } else {
-      // Quiz complete — compute result and navigate
       const result = computeResult(newAnswers);
       const params = new URLSearchParams({
         d: result.dominant,
@@ -43,17 +46,50 @@ export default function ArchetypePage() {
         p: result.cell.point,
         su: result.cell.support,
         sp: result.cell.specialist,
+        ctx: context ?? "dev",
       });
       router.push(`/archetype/results?${params.toString()}`);
     }
   }
 
-  // Normalize running scores for display
   const maxScore = Math.max(...Object.values(runningScores), 0.01);
+
+  // Step 0: use context question
+  if (context === null) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        <div className="mb-12">
+          <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-full bg-amber-400 transition-all duration-500 ease-out" style={{ width: "0%" }} />
+          </div>
+          <p className="text-xs text-zinc-500 mt-2">1 of {totalSteps}</p>
+        </div>
+
+        <h2 className="text-2xl font-bold mb-3">What do you mostly use Claude for?</h2>
+        <p className="text-sm text-zinc-500 mb-8">This shapes your experience. Pick the closest fit.</p>
+
+        <div className="flex flex-col gap-3">
+          {USE_CONTEXT_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => handleContextSelect(opt.value)}
+              className="text-left border border-zinc-800 rounded-lg px-6 py-4 hover:border-amber-400/50 hover:bg-zinc-900 transition cursor-pointer"
+            >
+              <p className="font-medium text-zinc-100 mb-0.5">{opt.label}</p>
+              <p className="text-sm text-zinc-500">{opt.description}</p>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Steps 1-5: archetype questions
+  const question = QUESTIONS[currentQ];
+  const questionText = getQuestionText(question, context);
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-16">
-      {/* Progress bar */}
       <div className="mb-12">
         <div className="h-1 bg-zinc-800 rounded-full overflow-hidden">
           <div
@@ -62,14 +98,12 @@ export default function ArchetypePage() {
           />
         </div>
         <p className="text-xs text-zinc-500 mt-2">
-          {currentQ + 1} of {QUESTIONS.length}
+          {currentQ + 2} of {totalSteps}
         </p>
       </div>
 
-      {/* Question */}
-      <h2 className="text-2xl font-bold mb-8">{question.text}</h2>
+      <h2 className="text-2xl font-bold mb-8">{questionText}</h2>
 
-      {/* Options */}
       <div className="flex flex-col gap-3 mb-12">
         {question.options.map((option) => (
           <button
@@ -83,7 +117,6 @@ export default function ArchetypePage() {
         ))}
       </div>
 
-      {/* Mini radar (running scores) */}
       {currentQ > 0 && (
         <div className="border border-zinc-800 rounded-lg p-4">
           <p className="text-xs text-zinc-500 mb-3">Your pattern is forming...</p>

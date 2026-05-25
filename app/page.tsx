@@ -71,9 +71,8 @@ function HomeContent() {
           <span className="text-amber-400">Your Claude.</span> Shaped around how you work.
         </h1>
         <p className="text-lg text-zinc-400 mb-10">
-          A CLAUDE.md is a config file that tells Claude Code who you are and how you think.
-          We help you build one and keep it current.
-          Drift is natural, we&apos;re here to help you navigate.
+          CLAUDE.md is a file that tells Claude how to act, respond, and work with you.
+          We create one based on how you actually think, or refine the one you already have.
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <a
