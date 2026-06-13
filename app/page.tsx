@@ -24,13 +24,13 @@ function HomeContent() {
           <div className="flex flex-col sm:flex-row gap-3">
             <a
               href="/freshness"
-              className="inline-block bg-amber-400 text-zinc-950 font-semibold px-8 py-3 rounded-lg hover:bg-amber-300 transition text-center"
+              className="inline-block bg-amber-400 text-zinc-950 font-semibold px-8 py-3 rounded-xl hover:bg-amber-300 transition text-center"
             >
               Check for drift
             </a>
             <a
               href="/seed"
-              className="inline-block border border-zinc-700 text-zinc-200 font-semibold px-8 py-3 rounded-lg hover:border-zinc-500 transition text-center"
+              className="inline-block border border-zinc-700 text-zinc-200 font-semibold px-8 py-3 rounded-xl hover:border-zinc-500 transition text-center"
             >
               Get the seed packet
             </a>
@@ -38,7 +38,7 @@ function HomeContent() {
         </section>
 
         <section className="pb-20">
-          <div className="border border-zinc-800 rounded-lg p-8">
+          <div className="border border-zinc-800 rounded-xl p-8">
             <h2 className="text-xl font-semibold mb-2">Check your CLAUDE.md for drift</h2>
             <p className="text-zinc-400 text-sm mb-6">
               Paste it. We see drift, not docs. Two free checks a week.
@@ -77,7 +77,7 @@ function HomeContent() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <a
             href="/?rail=have"
-            className="block border border-zinc-800 rounded-lg p-6 hover:border-amber-400/50 transition"
+            className="block border border-zinc-800 rounded-xl p-6 hover:border-amber-400/50 transition"
           >
             <h3 className="font-semibold text-lg mb-1">I have a CLAUDE.md</h3>
             <p className="text-sm text-amber-400 mb-2">Upgrade it</p>
@@ -87,12 +87,12 @@ function HomeContent() {
           </a>
           <a
             href="/archetype"
-            className="block border border-zinc-800 rounded-lg p-6 hover:border-amber-400/50 transition"
+            className="block border border-zinc-800 rounded-xl p-6 hover:border-amber-400/50 transition"
           >
             <h3 className="font-semibold text-lg mb-1">Starting fresh?</h3>
             <p className="text-sm text-amber-400 mb-2">Start here</p>
             <p className="text-sm text-zinc-400">
-              Take the 5-question quiz. Get a seed packet shaped around how you actually work.
+              Take the quiz. Get a seed packet shaped around how you actually work.
             </p>
           </a>
         </div>
@@ -101,7 +101,7 @@ function HomeContent() {
       <section className="pb-20 flex flex-col items-center gap-6 text-center">
         <a
           href="https://buy.stripe.com/8x27sLbRHfyC4VJ5UM0RG00"
-          className="inline-block border border-amber-400/40 text-amber-400 text-sm font-medium px-6 py-2.5 rounded-lg hover:border-amber-400/70 hover:bg-amber-400/5 transition"
+          className="inline-block border border-amber-400/40 text-amber-400 text-sm font-medium px-6 py-2.5 rounded-xl hover:border-amber-400/70 hover:bg-amber-400/5 transition"
         >
           Support the project
         </a>

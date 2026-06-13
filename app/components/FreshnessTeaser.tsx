@@ -27,13 +27,13 @@ export default function FreshnessTeaser() {
         onChange={(e) => setText(e.target.value)}
         placeholder={PLACEHOLDER}
         rows={8}
-        className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
+        className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
       />
       <div className="flex items-center justify-between">
         <button
           onClick={handleCheck}
           disabled={!text.trim()}
-          className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-lg hover:bg-amber-300 disabled:opacity-40 transition"
+          className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition"
         >
           Check
         </button>

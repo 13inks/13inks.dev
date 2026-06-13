@@ -258,7 +258,7 @@ export default function GeneratePage() {
               onChange={(e) => setReadme(e.target.value)}
               placeholder={README_PLACEHOLDER}
               rows={6}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
             />
           </Field>
 
@@ -272,7 +272,7 @@ export default function GeneratePage() {
               onChange={(e) => setDirs(e.target.value)}
               placeholder={DIRS_PLACEHOLDER}
               rows={6}
-              className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
+              className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
             />
           </Field>
 
@@ -280,7 +280,7 @@ export default function GeneratePage() {
             <button
               onClick={generate}
               disabled={loading || !hasAnyInput()}
-              className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-lg hover:bg-amber-300 disabled:opacity-40 transition"
+              className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition"
             >
               {loading ? "Reading…" : "Generate"}
             </button>
@@ -295,7 +295,7 @@ export default function GeneratePage() {
       )}
 
       {genericError && (
-        <div className="mb-10 p-4 border border-zinc-800 rounded-lg text-zinc-400">
+        <div className="mb-10 p-4 border border-zinc-800 rounded-xl text-zinc-400">
           {genericError}
           <button
             onClick={() => setGenericError(null)}
@@ -378,7 +378,7 @@ function ResultCard({
 }) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between gap-6 p-6 border border-emerald-400/30 rounded-lg">
+      <div className="flex items-center justify-between gap-6 p-6 border border-emerald-400/30 rounded-xl">
         <div>
           <p className="text-emerald-400 text-sm font-medium uppercase tracking-wide mb-1">
             Generated
@@ -391,24 +391,24 @@ function ResultCard({
         <div className="flex items-center gap-2">
           <button
             onClick={onCopy}
-            className="bg-zinc-800 text-zinc-200 text-sm font-medium px-4 py-2 rounded-lg hover:bg-zinc-700 transition"
+            className="bg-zinc-800 text-zinc-200 text-sm font-medium px-4 py-2 rounded-xl hover:bg-zinc-700 transition"
           >
             {copied ? "Copied" : "Copy"}
           </button>
           <button
             onClick={onDownload}
-            className="bg-amber-400 text-zinc-950 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-amber-300 transition"
+            className="bg-amber-400 text-zinc-950 text-sm font-semibold px-4 py-2 rounded-xl hover:bg-amber-300 transition"
           >
             Download
           </button>
         </div>
       </div>
 
-      <pre className="bg-zinc-950 border border-zinc-800 rounded-lg p-6 font-mono text-sm text-zinc-200 overflow-x-auto whitespace-pre-wrap">
+      <pre className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 font-mono text-sm text-zinc-200 overflow-x-auto whitespace-pre-wrap">
         {result.generated}
       </pre>
 
-      <div className="p-6 border border-zinc-800 rounded-lg flex items-center justify-between gap-6">
+      <div className="p-6 border border-zinc-800 rounded-xl flex items-center justify-between gap-6">
         <div>
           <p className="text-zinc-200 font-medium mb-1">
             Want to keep this fresh?
@@ -455,7 +455,7 @@ function PaywallCard({
 }) {
   return (
     <div className="space-y-6">
-      <div className="p-6 border border-zinc-800 rounded-lg">
+      <div className="p-6 border border-zinc-800 rounded-xl">
         <p className="text-zinc-200 font-medium mb-1">{err.message}</p>
         <p className="text-sm text-zinc-500">
           Resets {new Date(err.quota.resetAt).toLocaleDateString()}.
@@ -465,7 +465,7 @@ function PaywallCard({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button
           onClick={() => onCheckout("single")}
-          className="text-left p-6 border border-zinc-800 rounded-lg hover:border-zinc-600 transition"
+          className="text-left p-6 border border-zinc-800 rounded-xl hover:border-zinc-600 transition"
         >
           <p className="text-zinc-100 font-semibold mb-1">Single — $1</p>
           <p className="text-sm text-zinc-400">
@@ -474,7 +474,7 @@ function PaywallCard({
         </button>
         <button
           onClick={() => onCheckout("sub")}
-          className="text-left p-6 border border-zinc-800 rounded-lg hover:border-zinc-600 transition"
+          className="text-left p-6 border border-zinc-800 rounded-xl hover:border-zinc-600 transition"
         >
           <p className="text-zinc-100 font-semibold mb-1">Subscribe — $9/mo</p>
           <p className="text-sm text-zinc-400">

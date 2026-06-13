@@ -96,7 +96,7 @@ export default function SeedPage() {
               <button
                 key={a}
                 onClick={() => setArchetype(a)}
-                className={`text-left p-4 rounded-lg border transition ${
+                className={`text-left p-4 rounded-xl border transition ${
                   selected
                     ? "border-amber-400/60 bg-zinc-900"
                     : "border-zinc-800 hover:border-zinc-600"
@@ -129,13 +129,13 @@ export default function SeedPage() {
           onChange={(e) => setContext(e.target.value)}
           placeholder="e.g. A Next.js SaaS app for tracking fitness goals, TypeScript, Postgres."
           rows={3}
-          className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 text-sm focus:outline-none focus:border-zinc-600 resize-none text-zinc-200 placeholder:text-zinc-600"
+          className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-sm focus:outline-none focus:border-zinc-600 resize-none text-zinc-200 placeholder:text-zinc-600"
         />
       </section>
 
       {/* What's in the packet */}
       {archetype && (
-        <section className="mb-10 p-4 border border-zinc-800 rounded-lg">
+        <section className="mb-10 p-4 border border-zinc-800 rounded-xl">
           <p className="text-xs text-zinc-500 uppercase tracking-wide mb-3">Your packet will contain</p>
           <ul className="text-sm text-zinc-400 flex flex-col gap-1.5">
             <li><span className="font-mono text-zinc-300">PLANT.md</span> — the prompt to paste into Claude</li>
@@ -151,7 +151,7 @@ export default function SeedPage() {
       <button
         onClick={handleDownload}
         disabled={!archetype || downloading}
-        className="w-full bg-amber-400 text-zinc-950 font-semibold py-3 rounded-lg hover:bg-amber-300 disabled:opacity-40 transition"
+        className="w-full bg-amber-400 text-zinc-950 font-semibold py-3 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition"
       >
         {downloading ? "Building packet…" : "Download seed packet (.zip)"}
       </button>
@@ -161,7 +161,7 @@ export default function SeedPage() {
       )}
 
       {/* Expand teaser */}
-      <div className="mt-16 p-6 border border-zinc-800 rounded-lg text-center">
+      <div className="mt-16 p-6 border border-zinc-800 rounded-xl text-center">
         <p className="text-zinc-300 font-medium mb-1">Ready to grow further?</p>
         <p className="text-sm text-zinc-500 mb-4">
           Memory files, rule constraints, agent scaffolds, and a living-garden tier that keeps your CLAUDE.md fresh as your codebase evolves.

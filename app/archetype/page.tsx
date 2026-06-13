@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QUESTIONS, USE_CONTEXT_OPTIONS, getQuestionText, Option, UseContext } from "@/lib/questions";
+import { QUESTIONS, USE_CONTEXT_OPTIONS, getQuestionText, getOptionText, Option, UseContext } from "@/lib/questions";
 import { computeResult, ArchetypeScores } from "@/lib/scoring";
-import { ARCHETYPES } from "@/lib/archetypes";
+import { ARCHETYPES, resolveInk } from "@/lib/archetypes";
 
 export default function ArchetypePage() {
   const router = useRouter();
@@ -40,12 +40,11 @@ export default function ArchetypePage() {
       setCurrentQ(currentQ + 1);
     } else {
       const result = computeResult(newAnswers);
+      const ink = resolveInk(result.scores);
       const params = new URLSearchParams({
         d: result.dominant,
         s: JSON.stringify(result.scores),
-        p: result.cell.point,
-        su: result.cell.support,
-        sp: result.cell.specialist,
+        ink: JSON.stringify(ink),
         ctx: context ?? "dev",
       });
       router.push(`/archetype/results?${params.toString()}`);
@@ -73,7 +72,7 @@ export default function ArchetypePage() {
             <button
               key={opt.value}
               onClick={() => handleContextSelect(opt.value)}
-              className="text-left border border-zinc-800 rounded-lg px-6 py-4 hover:border-amber-400/50 hover:bg-zinc-900 transition cursor-pointer"
+              className="text-left border border-zinc-800 rounded-xl px-6 py-4 hover:border-amber-400/50 hover:bg-zinc-900 transition cursor-pointer"
             >
               <p className="font-medium text-zinc-100 mb-0.5">{opt.label}</p>
               <p className="text-sm text-zinc-500">{opt.description}</p>
@@ -109,39 +108,42 @@ export default function ArchetypePage() {
           <button
             key={option.label}
             onClick={() => handleSelect(option)}
-            className="text-left border border-zinc-800 rounded-lg px-6 py-4 hover:border-amber-400/50 hover:bg-zinc-900 transition cursor-pointer"
+            className="text-left border border-zinc-800 rounded-xl px-6 py-4 hover:border-amber-400/50 hover:bg-zinc-900 transition cursor-pointer"
           >
             <span className="text-zinc-400 font-mono mr-3">{option.label}</span>
-            <span>{option.text}</span>
+            <span>{getOptionText(option, context!)}</span>
           </button>
         ))}
       </div>
 
       {currentQ > 0 && (
-        <div className="border border-zinc-800 rounded-lg p-4">
-          <p className="text-xs text-zinc-500 mb-3">Your pattern is forming...</p>
+        <div className="border border-zinc-800 rounded-xl p-4">
+          <p className="text-xs text-zinc-500 mb-3">Your virtues are forming...</p>
           <div className="flex flex-col gap-1.5">
             {Object.entries(runningScores)
               .sort(([, a], [, b]) => b - a)
-              .map(([arch, score]) => (
-                <div key={arch} className="flex items-center gap-3">
-                  <span
-                    className="text-xs w-24 text-right"
-                    style={{ color: ARCHETYPES[arch as keyof typeof ARCHETYPES].color }}
-                  >
-                    {arch}
-                  </span>
-                  <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{
-                        width: `${(score / maxScore) * 100}%`,
-                        backgroundColor: ARCHETYPES[arch as keyof typeof ARCHETYPES].color,
-                      }}
-                    />
+              .map(([arch, score]) => {
+                const info = ARCHETYPES[arch as keyof typeof ARCHETYPES];
+                return (
+                  <div key={arch} className="flex items-center gap-3">
+                    <span
+                      className="text-xs w-28 text-right"
+                      style={{ color: info.color }}
+                    >
+                      {info.virtue}
+                    </span>
+                    <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{
+                          width: `${(score / maxScore) * 100}%`,
+                          backgroundColor: info.color,
+                        }}
+                      />
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         </div>
       )}

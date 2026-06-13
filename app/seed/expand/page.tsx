@@ -20,11 +20,11 @@ export default function ExpandPage() {
           name="email"
           required
           placeholder="you@example.com"
-          className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-600 text-zinc-200 placeholder:text-zinc-600"
+          className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-zinc-600 text-zinc-200 placeholder:text-zinc-600"
         />
         <button
           type="submit"
-          className="bg-amber-400 text-zinc-950 font-semibold px-5 py-2.5 rounded-lg hover:bg-amber-300 transition text-sm"
+          className="bg-amber-400 text-zinc-950 font-semibold px-5 py-2.5 rounded-xl hover:bg-amber-300 transition text-sm"
         >
           Notify me
         </button>

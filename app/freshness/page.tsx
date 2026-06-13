@@ -220,13 +220,13 @@ export default function FreshnessPage() {
             onChange={(e) => setText(e.target.value)}
             placeholder={PLACEHOLDER}
             rows={12}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
+            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 font-mono text-sm focus:outline-none focus:border-zinc-600 resize-y"
           />
           <div className="flex items-center justify-between">
             <button
               onClick={check}
               disabled={loading || !text.trim()}
-              className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-lg hover:bg-amber-300 disabled:opacity-40 transition"
+              className="bg-amber-400 text-zinc-950 font-semibold px-6 py-2.5 rounded-xl hover:bg-amber-300 disabled:opacity-40 transition"
             >
               {loading ? "Reading…" : "Check"}
             </button>
@@ -246,7 +246,7 @@ export default function FreshnessPage() {
       )}
 
       {genericError && (
-        <div className="mb-10 p-4 border border-zinc-800 rounded-lg text-zinc-400">
+        <div className="mb-10 p-4 border border-zinc-800 rounded-xl text-zinc-400">
           {genericError}
           <button
             onClick={() => setGenericError(null)}
@@ -320,7 +320,7 @@ function ReportCard({
   return (
     <div className="space-y-8">
       <div
-        className={`flex items-center justify-between gap-6 p-6 border rounded-lg ${accent}`}
+        className={`flex items-center justify-between gap-6 p-6 border rounded-xl ${accent}`}
       >
         <div className="flex items-center gap-6">
           <span className="text-6xl font-bold tabular-nums">
@@ -351,7 +351,7 @@ function ReportCard({
             {flagged.slice(0, 12).map((c, i) => (
               <li
                 key={i}
-                className="border border-zinc-800 rounded-lg p-3 text-sm"
+                className="border border-zinc-800 rounded-xl p-3 text-sm"
               >
                 <p className="font-mono text-zinc-300 mb-1">
                   <span className="text-zinc-500">L{c.line}:</span>{" "}
@@ -379,7 +379,7 @@ function ReportCard({
               {report.suggestions.map((s, i) => (
                 <li
                   key={i}
-                  className="border border-amber-400/20 rounded-lg p-3 text-sm text-zinc-300"
+                  className="border border-amber-400/20 rounded-xl p-3 text-sm text-zinc-300"
                 >
                   {s}
                 </li>
@@ -389,13 +389,13 @@ function ReportCard({
         )}
 
       {report.tier === "free" && flagged.length > 0 && (
-        <section className="border border-zinc-800 rounded-lg p-5">
+        <section className="border border-zinc-800 rounded-xl p-5">
           <p className="text-sm text-zinc-300 mb-3">
             We found the drift. Want the fix? One dollar.
           </p>
           <button
             onClick={() => onCheckout("single")}
-            className="bg-zinc-100 text-zinc-950 font-medium px-4 py-2 rounded-lg hover:bg-white transition text-sm"
+            className="bg-zinc-100 text-zinc-950 font-medium px-4 py-2 rounded-xl hover:bg-white transition text-sm"
           >
             Refresh this file — $1
           </button>
@@ -423,7 +423,7 @@ function PaywallCard({
   onCheckout: (mode: "single" | "bundle" | "sub") => void;
 }) {
   return (
-    <div className="border border-zinc-800 rounded-lg p-6 space-y-4">
+    <div className="border border-zinc-800 rounded-xl p-6 space-y-4">
       <p className="text-zinc-300">{err.message}</p>
       <p className="text-sm text-zinc-500">
         Resets {new Date(err.quota.resetAt).toLocaleDateString()}. Or run this
@@ -432,7 +432,7 @@ function PaywallCard({
       <div className="flex flex-wrap items-center gap-3 pt-1">
         <button
           onClick={() => onCheckout("single")}
-          className="bg-amber-400 text-zinc-950 font-semibold px-5 py-2.5 rounded-lg hover:bg-amber-300 transition"
+          className="bg-amber-400 text-zinc-950 font-semibold px-5 py-2.5 rounded-xl hover:bg-amber-300 transition"
         >
           {err.options.single_check.label}
         </button>
